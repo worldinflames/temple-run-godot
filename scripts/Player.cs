@@ -276,8 +276,10 @@ public partial class Player : CharacterBody3D
 		for (var i = 0; i < GetSlideCollisionCount(); i++)
 		{
 			var col = GetSlideCollision(i);
-			if (col.GetNormal().Y < 0.25f) continue;
-			if (col.GetCollider() is Node n && n.IsInGroup("hazard"))
+			// Check both the collider and its parent — hazard StaticBody3Ds are
+			// children of the Content holder node.
+			var collider = col.GetCollider();
+			if (collider is Node n && (n.IsInGroup("hazard") || (n.GetParent() is Node p && p.IsInGroup("hazard"))))
 			{
 				Die();
 				return;

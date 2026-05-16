@@ -148,7 +148,7 @@ public partial class TrackSpawner : Node3D
 		if (turn != 0)
 			PathForward = PathForward.Rotated(Vector3.Up, Mathf.Pi / 2f * turn).Normalized();
 
-		var right = Vector3.Up.Cross(PathForward).Normalized();
+		var right = PathForward.Cross(Vector3.Up).Normalized();
 		var basis = new Basis(right, Vector3.Up, PathForward);
 		root.GlobalTransform = new Transform3D(basis, _nextCenter);
 		_nextCenter += PathForward * SegmentLength;
@@ -161,7 +161,7 @@ public partial class TrackSpawner : Node3D
 	{
 		var pf = new Vector3(0f, 0f, 1f);
 		var center = pf * (SegmentLength * index);
-		var right = Vector3.Up.Cross(pf).Normalized();
+		var right = pf.Cross(Vector3.Up).Normalized();
 		var basis = new Basis(right, Vector3.Up, pf);
 		root.GlobalTransform = new Transform3D(basis, center);
 	}
