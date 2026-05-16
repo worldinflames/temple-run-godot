@@ -57,6 +57,9 @@ public partial class TrackSpawner : Node3D
 		ResetTrack();
 	}
 
+	/// <summary>Called by Game._Ready() to directly wire the player reference (NodePath resolution unreliable).</summary>
+	public void SetPlayer(Player player) => _player = player;
+
 	public override void _PhysicsProcess(double delta)
 	{
 		if (_player == null || !_player.IsAlive)

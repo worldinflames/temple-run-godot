@@ -15,3 +15,4 @@ C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\refint\T
 C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.pdb
 C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.genruntimeconfig.cache
 C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\ref\TempleRun.dll
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.sourcelink.json

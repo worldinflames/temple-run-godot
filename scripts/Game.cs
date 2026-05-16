@@ -19,6 +19,11 @@ public partial class Game : Node3D
 		_track = GetNode<TrackSpawner>("TrackSpawner");
 		_hud = GetNode<GameHud>("HUD");
 
+		// Wire cross-references directly — NodePath resolution between instanced
+		// scenes and sibling nodes fails silently in this project setup.
+		_player.SetTrack(_track);
+		_track.SetPlayer(_player);
+
 		_player.ConfigureForNewRun();
 		_track.ResetTrack();
 		_player.ResetRunner();
