@@ -1,0 +1,215 @@
+[gd_scene load_steps=22 format=3]
+
+[ext_resource type="Script" path="res://scripts/Player.cs" id="1_script"]
+
+; ── Materials ──────────────────────────────────────────────────────────────
+; dark armour / leather
+[sub_resource type="StandardMaterial3D" id="Mat_armour"]
+albedo_color = Color(0.13, 0.12, 0.11, 1)
+metallic = 0.55
+roughness = 0.45
+
+; off-white / silver hair & details
+[sub_resource type="StandardMaterial3D" id="Mat_silver"]
+albedo_color = Color(0.88, 0.87, 0.84, 1)
+metallic = 0.2
+roughness = 0.7
+
+; skin (face, hands)
+[sub_resource type="StandardMaterial3D" id="Mat_skin"]
+albedo_color = Color(0.82, 0.68, 0.55, 1)
+roughness = 0.9
+
+; dark cape / cloak
+[sub_resource type="StandardMaterial3D" id="Mat_cape"]
+albedo_color = Color(0.18, 0.16, 0.14, 1)
+roughness = 0.95
+
+; belt / straps accent
+[sub_resource type="StandardMaterial3D" id="Mat_belt"]
+albedo_color = Color(0.35, 0.28, 0.18, 1)
+roughness = 0.85
+
+; steel sword blade
+[sub_resource type="StandardMaterial3D" id="Mat_steel"]
+albedo_color = Color(0.72, 0.74, 0.78, 1)
+metallic = 0.9
+roughness = 0.25
+
+; gold medallion
+[sub_resource type="StandardMaterial3D" id="Mat_gold"]
+albedo_color = Color(0.85, 0.70, 0.25, 1)
+metallic = 0.8
+roughness = 0.3
+
+; ── Collision shape ────────────────────────────────────────────────────────
+[sub_resource type="CapsuleShape3D" id="Col_body"]
+radius = 0.26
+height = 1.1
+
+; ── Meshes ─────────────────────────────────────────────────────────────────
+[sub_resource type="BoxMesh" id="M_torso"]
+size = Vector3(0.50, 0.55, 0.26)
+
+[sub_resource type="BoxMesh" id="M_pelvis"]
+size = Vector3(0.42, 0.22, 0.24)
+
+[sub_resource type="SphereMesh" id="M_head"]
+radius = 0.195
+height = 0.39
+
+[sub_resource type="CapsuleMesh" id="M_hair"]
+radius = 0.205
+height = 0.32
+
+[sub_resource type="SphereMesh" id="M_medallion"]
+radius = 0.055
+height = 0.11
+
+; upper arm
+[sub_resource type="CapsuleMesh" id="M_upper_arm"]
+radius = 0.068
+height = 0.32
+
+; forearm
+[sub_resource type="CapsuleMesh" id="M_forearm"]
+radius = 0.058
+height = 0.28
+
+; thigh
+[sub_resource type="CapsuleMesh" id="M_thigh"]
+radius = 0.082
+height = 0.36
+
+; shin
+[sub_resource type="CapsuleMesh" id="M_shin"]
+radius = 0.070
+height = 0.32
+
+; cape (flat box, angled back)
+[sub_resource type="BoxMesh" id="M_cape"]
+size = Vector3(0.46, 0.70, 0.06)
+
+; sword blade
+[sub_resource type="BoxMesh" id="M_sword"]
+size = Vector3(0.045, 0.72, 0.008)
+
+; sword guard
+[sub_resource type="BoxMesh" id="M_guard"]
+size = Vector3(0.18, 0.04, 0.03)
+
+; ── Scene tree ─────────────────────────────────────────────────────────────
+[node name="Player" type="CharacterBody3D" groups=["runner"]]
+collision_layer = 1
+collision_mask = 10
+floor_stop_on_slope = true
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.62, 0)
+shape = SubResource("Col_body")
+
+[node name="MeshRoot" type="Node3D" parent="."]
+
+; ── Torso ──────────────────────────────────────────────────────────────────
+[node name="Torso" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.99, 0)
+mesh = SubResource("M_torso")
+surface_material_override/0 = SubResource("Mat_armour")
+
+; belt stripe
+[node name="Belt" type="MeshInstance3D" parent="MeshRoot/Torso"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.27, 0.01)
+mesh = SubResource("M_pelvis")
+surface_material_override/0 = SubResource("Mat_belt")
+
+; medallion (wolf head suggestion — just a gold disc for now)
+[node name="Medallion" type="MeshInstance3D" parent="MeshRoot/Torso"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.10, 0.135)
+mesh = SubResource("M_medallion")
+surface_material_override/0 = SubResource("Mat_gold")
+
+; ── Cape ───────────────────────────────────────────────────────────────────
+[node name="Cape" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 0.97, -0.24, 0, 0.24, 0.97, 0, 0.88, -0.18)
+mesh = SubResource("M_cape")
+surface_material_override/0 = SubResource("Mat_cape")
+
+; ── Head ───────────────────────────────────────────────────────────────────
+[node name="Head" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.44, 0.02)
+mesh = SubResource("M_head")
+surface_material_override/0 = SubResource("Mat_skin")
+
+; silver-white hair (slightly elongated sphere sitting on top)
+[node name="Hair" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 0.55, 0, 0, 0, 1, 0, 1.53, -0.03)
+mesh = SubResource("M_hair")
+surface_material_override/0 = SubResource("Mat_silver")
+
+; ── Sword (on back, angled) ────────────────────────────────────────────────
+[node name="SwordBlade" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(0.97, 0.22, 0, -0.22, 0.97, 0, 0, 0, 1, 0.18, 0.98, -0.16)
+mesh = SubResource("M_sword")
+surface_material_override/0 = SubResource("Mat_steel")
+
+[node name="SwordGuard" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(0.97, 0.22, 0, -0.22, 0.97, 0, 0, 0, 1, 0.18, 1.33, -0.16)
+mesh = SubResource("M_guard")
+surface_material_override/0 = SubResource("Mat_armour")
+
+; ── Left arm (pivot at shoulder) ───────────────────────────────────────────
+[node name="LeftArmPivot" type="Node3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.285, 1.20, 0)
+
+[node name="UpperArm" type="MeshInstance3D" parent="MeshRoot/LeftArmPivot"]
+transform = Transform3D(0.98, 0.18, 0, -0.18, 0.98, 0, 0, 0, 1, 0, -0.16, 0)
+mesh = SubResource("M_upper_arm")
+surface_material_override/0 = SubResource("Mat_armour")
+
+[node name="Forearm" type="MeshInstance3D" parent="MeshRoot/LeftArmPivot"]
+transform = Transform3D(0.98, 0.18, 0, -0.18, 0.98, 0, 0, 0, 1, 0, -0.38, 0)
+mesh = SubResource("M_forearm")
+surface_material_override/0 = SubResource("Mat_silver")
+
+; ── Right arm (pivot at shoulder) ──────────────────────────────────────────
+[node name="RightArmPivot" type="Node3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.285, 1.20, 0)
+
+[node name="UpperArm" type="MeshInstance3D" parent="MeshRoot/RightArmPivot"]
+transform = Transform3D(0.98, -0.18, 0, 0.18, 0.98, 0, 0, 0, 1, 0, -0.16, 0)
+mesh = SubResource("M_upper_arm")
+surface_material_override/0 = SubResource("Mat_armour")
+
+[node name="Forearm" type="MeshInstance3D" parent="MeshRoot/RightArmPivot"]
+transform = Transform3D(0.98, -0.18, 0, 0.18, 0.98, 0, 0, 0, 1, 0, -0.38, 0)
+mesh = SubResource("M_forearm")
+surface_material_override/0 = SubResource("Mat_silver")
+
+; ── Left leg (pivot at hip) ─────────────────────────────────────────────────
+[node name="LeftLegPivot" type="Node3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0.70, 0)
+
+[node name="Thigh" type="MeshInstance3D" parent="MeshRoot/LeftLegPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.19, 0)
+mesh = SubResource("M_thigh")
+surface_material_override/0 = SubResource("Mat_armour")
+
+[node name="Shin" type="MeshInstance3D" parent="MeshRoot/LeftLegPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.44, 0)
+mesh = SubResource("M_shin")
+surface_material_override/0 = SubResource("Mat_silver")
+
+; ── Right leg (pivot at hip) ────────────────────────────────────────────────
+[node name="RightLegPivot" type="Node3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.70, 0)
+
+[node name="Thigh" type="MeshInstance3D" parent="MeshRoot/RightLegPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.19, 0)
+mesh = SubResource("M_thigh")
+surface_material_override/0 = SubResource("Mat_armour")
+
+[node name="Shin" type="MeshInstance3D" parent="MeshRoot/RightLegPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.44, 0)
+mesh = SubResource("M_shin")
+surface_material_override/0 = SubResource("Mat_silver")

@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "D/T/HD//xOY=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\admin\\source\\repos\\temple-run-godot\\TempleRun.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\admin\\.nuget\\packages\\godot.sourcegenerators\\4.2.2\\godot.sourcegenerators.4.2.2.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\godotsharp\\4.2.2\\godotsharp.4.2.2.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\godotsharpeditor\\4.2.2\\godotsharpeditor.4.2.2.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,17 @@
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.csproj.AssemblyReference.cache
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.AssemblyInfoInputs.cache
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.AssemblyInfo.cs
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.csproj.CoreCompileInputs.cache
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\bin\Debug\TempleRun.deps.json
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\bin\Debug\TempleRun.runtimeconfig.json
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\bin\Debug\TempleRun.dll
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\bin\Debug\TempleRun.pdb
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\bin\Debug\GodotSharp.dll
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\bin\Debug\GodotSharpEditor.dll
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.csproj.Up2Date
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.dll
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\refint\TempleRun.dll
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.pdb
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\TempleRun.genruntimeconfig.cache
+C:\Users\admin\source\repos\temple-run-godot\.godot\mono\temp\obj\Debug\ref\TempleRun.dll

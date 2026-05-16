@@ -1,0 +1,194 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/Game.cs" id="1_game"]
+[ext_resource type="Script" path="res://scripts/TrackSpawner.cs" id="2_track"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="Script" path="res://scripts/GameHud.cs" id="4_hud"]
+
+[sub_resource type="Environment" id="Environment_world"]
+background_mode = 1
+background_color = Color(0.52, 0.72, 0.95, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.38, 0.44, 0.52, 1)
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.85, 0.9, 1, 1)
+fog_sun_scatter = 0.35
+fog_density = 0.012
+fog_aerial_perspective = 0.1
+
+[node name="Game" type="Node3D"]
+script = ExtResource("1_game")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.906308, -0.271022, 0.323744, 0, 0.766044, 0.642788, -0.422618, -0.582563, 0.694272, 4.5, 11, 6)
+light_color = Color(1, 0.98, 0.92, 1)
+light_energy = 1.4
+shadow_enabled = true
+directional_shadow_mode = 1
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_world")
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+track_path = NodePath("../TrackSpawner")
+
+[node name="TrackSpawner" type="Node3D" parent="."]
+script = ExtResource("2_track")
+player_path = NodePath("../Player")
+
+[node name="CameraPivot" type="Node3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+current = true
+fov = 56.0
+
+[node name="HUD" type="CanvasLayer" parent="."]
+process_mode = 3
+script = ExtResource("4_hud")
+
+[node name="DistanceLabel" type="Label" parent="HUD"]
+offset_left = 20.0
+offset_top = 16.0
+theme_override_colors/font_color = Color(0.08, 0.09, 0.12, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 0.35)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 22
+text = "Dystans: 0 m"
+
+[node name="CoinsLabel" type="Label" parent="HUD"]
+offset_left = 20.0
+offset_top = 48.0
+theme_override_colors/font_color = Color(0.08, 0.09, 0.12, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 0.35)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 22
+text = "Monety: 0"
+
+[node name="HelpLabel" type="Label" parent="HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -88.0
+offset_right = 1180.0
+offset_bottom = -12.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.12, 0.13, 0.16, 1)
+theme_override_font_sizes/font_size = 15
+text = "A / ← — pas w lewo (ekran)  ·  D / → — pas w prawo  ·  Spacja — skok  ·  Q — skręt w lewo (na końcu odcinka)  ·  E — skręt w prawo  ·  ESC — pauza"
+
+[node name="GameOverOverlay" type="ColorRect" parent="HUD"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.05, 0.06, 0.1, 0.72)
+
+[node name="Center" type="CenterContainer" parent="HUD/GameOverOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="HUD/GameOverOverlay/Center"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="HUD/GameOverOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.93, 0.82, 1)
+theme_override_font_sizes/font_size = 32
+text = "Koniec biegu"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="HUD/GameOverOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.98, 1)
+theme_override_font_sizes/font_size = 20
+text = "Twój wynik: —"
+horizontal_alignment = 1
+
+[node name="NameHint" type="Label" parent="HUD/GameOverOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.9, 0.98, 1)
+theme_override_font_sizes/font_size = 18
+text = "Wpisz imię lub pseudonim:"
+horizontal_alignment = 1
+
+[node name="NameEdit" type="LineEdit" parent="HUD/GameOverOverlay/Center/VBox"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+placeholder_text = "Np. Mariusz"
+alignment = 1
+max_length = 24
+
+[node name="SaveButton" type="Button" parent="HUD/GameOverOverlay/Center/VBox"]
+layout_mode = 2
+text = "Zapisz wynik"
+
+[node name="TopScoresLabel" type="Label" parent="HUD/GameOverOverlay/Center/VBox"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Najlepsza dziesiątka:"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ButtonRow" type="HBoxContainer" parent="HUD/GameOverOverlay/Center/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="MenuButton" type="Button" parent="HUD/GameOverOverlay/Center/VBox/ButtonRow"]
+layout_mode = 2
+text = "Menu główne"
+
+[node name="AgainButton" type="Button" parent="HUD/GameOverOverlay/Center/VBox/ButtonRow"]
+layout_mode = 2
+text = "Zagraj ponownie"
+
+[node name="PauseOverlay" type="ColorRect" parent="HUD"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.04, 0.06, 0.12, 0.55)
+
+[node name="Center" type="CenterContainer" parent="HUD/PauseOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="HUD/PauseOverlay/Center"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PauseTitle" type="Label" parent="HUD/PauseOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.97, 1, 1)
+theme_override_font_sizes/font_size = 34
+text = "Pauza"
+horizontal_alignment = 1
+
+[node name="PauseSubtitle" type="Label" parent="HUD/PauseOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.88, 0.96, 1)
+theme_override_font_sizes/font_size = 20
+text = "Naciśnij ESC, aby wznowić."
+horizontal_alignment = 1

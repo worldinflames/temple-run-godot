@@ -1,0 +1,6 @@
+res://scenes/main_menu.tscn
+res://scripts/Game.cs
+res://scripts/TrackSpawner.cs
+res://scripts/MainMenu.cs
+res://scripts/Player.cs
+res://scripts/GameHud.cs

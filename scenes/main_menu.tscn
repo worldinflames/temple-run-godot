@@ -1,0 +1,111 @@
+[gd_scene load_steps=2 format=3 uid="uid://ywm0li8sem0n"]
+
+[ext_resource type="Script" path="res://scripts/MainMenu.cs" id="1_menu"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Bg" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.14, 0.22, 1)
+
+[node name="Root" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Root"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Root/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.82, 1)
+theme_override_font_sizes/font_size = 40
+text = "Bieg po ruinach"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Root/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.8, 0.9, 1)
+theme_override_font_sizes/font_size = 18
+text = "Endless runner — unikaj przeszkód, zbieraj monety, skręcaj w zakrętach."
+horizontal_alignment = 1
+
+[node name="BtnNew" type="Button" parent="Root/VBox"]
+custom_minimum_size = Vector2(280, 44)
+layout_mode = 2
+text = "Nowa gra"
+
+[node name="BtnScores" type="Button" parent="Root/VBox"]
+custom_minimum_size = Vector2(280, 44)
+layout_mode = 2
+text = "Najlepsi gracze"
+
+[node name="BtnExit" type="Button" parent="Root/VBox"]
+custom_minimum_size = Vector2(280, 44)
+layout_mode = 2
+text = "Wyjście"
+
+[node name="ScoresPanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -220.0
+offset_right = 320.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="ScoresPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="ScoresPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ScoresTitle" type="Label" parent="ScoresPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Ranking TOP 10"
+horizontal_alignment = 1
+
+[node name="ScoresText" type="Label" parent="ScoresPanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 17
+text = "—"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="BtnBack" type="Button" parent="ScoresPanel/Margin/VBox"]
+layout_mode = 2
+text = "Wróć"
