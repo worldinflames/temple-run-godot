@@ -90,31 +90,12 @@ public partial class Player : CharacterBody3D
 
 	// ── Main physics loop ──────────────────────────────────────────────────
 
-	private float _autoLaneTimer;  // auto-switches lane every 3s to test movement
-
 	public override void _PhysicsProcess(double delta)
 	{
 		var dt = (float)delta;
 		if (!_alive) return;
 
 		var seg = _track?.GetClosestSegment(GlobalPosition);
-
-		// ── DIAGNOSTIC: print every second ──
-		_dbgFrame++;
-		if (_dbgFrame % 60 == 0)
-			GD.Print($"[DBG] track={(_track == null ? "NULL" : "ok")} seg={seg?.Name ?? "NULL"} " +
-			         $"laneIdx={_laneIndex} smoothX={_smoothLaneX:F2} pos={GlobalPosition:F1}");
-
-		// ── AUTO-LANE TEST: switches lane automatically every 3s ──
-		// This proves the mechanism works independently of input.
-		// Remove once lane-switching is confirmed working.
-		_autoLaneTimer += dt;
-		if (_autoLaneTimer >= 3f)
-		{
-			_autoLaneTimer = 0f;
-			_laneIndex = (_laneIndex + 1) % Lanes.Length;
-			GD.Print($"[AUTO] Lane auto-changed to {_laneIndex} (X={Lanes[_laneIndex]})");
-		}
 
 		// 1. Direction this frame comes from the segment underfoot
 		UpdateRunForward(seg);
