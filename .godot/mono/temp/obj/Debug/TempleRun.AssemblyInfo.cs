@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TempleRun")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7d71d150f6d4d88eb4f17c4c6e64be47bb2caeda")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5293b04f9e3d38d26a1c7d5c9b4ca711361ff3f2")]
 [assembly: System.Reflection.AssemblyProductAttribute("TempleRun")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TempleRun")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
