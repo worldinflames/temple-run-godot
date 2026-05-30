@@ -33,6 +33,8 @@ public partial class TrackSpawner : Node3D
 	private StandardMaterial3D? _matMoat;
 	private StandardMaterial3D? _matTorchFire;
 	private StandardMaterial3D? _matRoof;
+	private StandardMaterial3D? _matPit;
+	private StandardMaterial3D? _matPitWarn;
 
 	private Vector3 _nextCenter;
 	private int _segmentsSpawned;
@@ -62,7 +64,15 @@ public partial class TrackSpawner : Node3D
 			Emission = new Color(1.0f, 0.40f, 0.0f),
 			EmissionEnergyMultiplier = 2.5f
 		};
-		_matRoof = new StandardMaterial3D { AlbedoColor = new Color(0.60f, 0.10f, 0.10f) };
+		_matRoof     = new StandardMaterial3D { AlbedoColor = new Color(0.60f, 0.10f, 0.10f) };
+		_matPit      = new StandardMaterial3D { AlbedoColor = new Color(0.05f, 0.03f, 0.03f) };
+		_matPitWarn  = new StandardMaterial3D
+		{
+			AlbedoColor          = new Color(0.95f, 0.80f, 0.05f),
+			EmissionEnabled      = true,
+			Emission             = new Color(0.85f, 0.65f, 0.0f),
+			EmissionEnergyMultiplier = 0.9f
+		};
 
 		if (!PlayerPath.IsEmpty)
 			_player = GetNodeOrNull<Player>(PlayerPath);
@@ -189,28 +199,8 @@ public partial class TrackSpawner : Node3D
 
 	private void BuildSegmentVisuals(Node3D root)
 	{
-		var floorBody = new StaticBody3D
-		{
-			CollisionLayer = 2,
-			CollisionMask = 0
-		};
-		floorBody.AddToGroup("track_floor");
-		root.AddChild(floorBody);
-
-		var floorMesh = new MeshInstance3D();
-		var box = new BoxMesh { Size = new Vector3(6.5f, 0.45f, SegmentLength) };
-		floorMesh.Mesh = box;
-		floorMesh.Position = new Vector3(0f, -0.225f, 0f);
-		if (_matGround != null)
-			floorMesh.SetSurfaceOverrideMaterial(0, _matGround);
-		floorBody.AddChild(floorMesh);
-
-		var floorShape = new CollisionShape3D
-		{
-			Shape = new BoxShape3D { Size = box.Size },
-			Position = floorMesh.Position
-		};
-		floorBody.AddChild(floorShape);
+		// Floor is built dynamically per-recycle in RandomizeSegmentContent
+		// so pit segments can have a genuine gap with no floor collision.
 
 		foreach (var lx in Lanes)
 		{
@@ -233,31 +223,29 @@ public partial class TrackSpawner : Node3D
 		foreach (var c in holder.GetChildren())
 			c.QueueFree();
 
-		// Side decorations always present regardless of obstacle type
+		// Side decorations always present
 		SpawnSideDecorations(holder, seq);
 
-		var roll = (float)_rng.Randf();
+		var roll  = (float)_rng.Randf();
 		var early = seq < 3;
+
 		if (early)
 		{
-			if (roll < 0.35f)
-				return;
+			SpawnFloor(holder);
+			if (roll < 0.35f) return;
 			SpawnCoinArc(holder, Lanes[_rng.RandiRange(0, Lanes.Length - 1)]);
 			return;
 		}
 
-		if (roll < 0.18f)
-			return;
+		if (roll < 0.18f) { SpawnFloor(holder); return; }
 
 		var lane = _rng.RandiRange(0, Lanes.Length - 1);
-		var lx = Lanes[lane];
+		var lx   = Lanes[lane];
 
-		if (roll < 0.52f)
-			SpawnWallObstacle(holder, lx);
-		else if (roll < 0.78f)
-			SpawnSpikeRow(holder, lx);
-		else
-			SpawnCoinArc(holder, lx);
+		if      (roll < 0.42f) { SpawnFloor(holder); SpawnWallObstacle(holder, lx); }
+		else if (roll < 0.60f) { SpawnFloor(holder); SpawnSpikeRow(holder, lx); }
+		else if (roll < 0.78f)   SpawnPit(holder);   // pit manages its own split floor
+		else                   { SpawnFloor(holder); SpawnCoinArc(holder, lx); }
 	}
 
 	private void SpawnWallObstacle(Node3D holder, float lx)
@@ -347,6 +335,90 @@ public partial class TrackSpawner : Node3D
 
 			area.BodyEntered += body => OnCoinBodyEntered(body, area);
 			holder.AddChild(area);
+		}
+	}
+
+	// ─── Floor Helpers ────────────────────────────────────────────────────────────
+
+	/// <summary>Full-length floor for the whole segment.</summary>
+	private void SpawnFloor(Node3D holder)
+		=> AddFloorPiece(holder, 0f, SegmentLength);
+
+	/// <summary>Two floor pieces with a real gap at pitCenterZ ± pitLen/2.</summary>
+	private void SpawnFloorSplit(Node3D holder, float pitCenterZ, float pitLen)
+	{
+		var half     = SegmentLength * 0.5f;
+		var gapStart = pitCenterZ - pitLen * 0.5f;
+		var gapEnd   = pitCenterZ + pitLen * 0.5f;
+
+		var lenA = gapStart + half;          // piece before the gap
+		if (lenA > 0.05f)
+			AddFloorPiece(holder, -half + lenA * 0.5f, lenA);
+
+		var lenB = half - gapEnd;            // piece after the gap
+		if (lenB > 0.05f)
+			AddFloorPiece(holder, gapEnd + lenB * 0.5f, lenB);
+	}
+
+	private void AddFloorPiece(Node3D holder, float centerZ, float length)
+	{
+		var body = new StaticBody3D { CollisionLayer = 2, CollisionMask = 0 };
+		body.AddToGroup("track_floor");
+
+		var mesh = new MeshInstance3D();
+		var box  = new BoxMesh { Size = new Vector3(6.5f, 0.45f, length) };
+		mesh.Mesh     = box;
+		mesh.Position = new Vector3(0f, -0.225f, centerZ);
+		if (_matGround != null) mesh.SetSurfaceOverrideMaterial(0, _matGround);
+		body.AddChild(mesh);
+
+		var col = new CollisionShape3D
+		{
+			Shape    = new BoxShape3D { Size = box.Size },
+			Position = mesh.Position
+		};
+		body.AddChild(col);
+		holder.AddChild(body);
+	}
+
+	// ─── Pit Obstacle ──────────────────────────────────────────────────────────
+
+	private void SpawnPit(Node3D holder)
+	{
+		const float TrackW = 6.5f;
+		const float PitLen = 3.2f;
+
+		var pitZ = _rng.RandfRange(-2.0f, 2.0f);
+
+		// Real gap in the floor — player falls through
+		SpawnFloorSplit(holder, pitZ, PitLen);
+
+		// Visible pit depth (dark bottom)
+		var bottom = new MeshInstance3D();
+		bottom.Mesh = new BoxMesh { Size = new Vector3(TrackW + 0.6f, 0.3f, PitLen + 0.3f) };
+		bottom.Position = new Vector3(0f, -4.0f, pitZ);
+		if (_matPit != null) bottom.SetSurfaceOverrideMaterial(0, _matPit);
+		holder.AddChild(bottom);
+
+		// Stone ledge walls on both sides of the gap
+		foreach (var s in new[] { -1f, 1f })
+		{
+			var wall = new MeshInstance3D();
+			wall.Mesh = new BoxMesh { Size = new Vector3(TrackW + 0.6f, 4.5f, 0.28f) };
+			wall.Position = new Vector3(0f, -2.25f, pitZ + s * (PitLen * 0.5f));
+			if (_matCastleStone != null) wall.SetSurfaceOverrideMaterial(0, _matCastleStone);
+			holder.AddChild(wall);
+		}
+
+		// Yellow warning stripes on approach side
+		var warnZ = pitZ - PitLen * 0.5f - 0.9f;
+		foreach (var dz in new[] { 0f, 0.65f })
+		{
+			var stripe = new MeshInstance3D();
+			stripe.Mesh = new BoxMesh { Size = new Vector3(TrackW, 0.04f, 0.32f) };
+			stripe.Position = new Vector3(0f, 0.025f, warnZ - dz);
+			if (_matPitWarn != null) stripe.SetSurfaceOverrideMaterial(0, _matPitWarn);
+			holder.AddChild(stripe);
 		}
 	}
 
