@@ -47,7 +47,7 @@ public partial class TrackSpawner : Node3D
 	public override void _Ready()
 	{
 		_rng.Randomize();
-		_matGround = GD.Load<Material>("res://assets/materials/ground.tres");
+		_matGround = CreateStoneRoadMaterial(); // procedural stone road
 		_matLane = GD.Load<Material>("res://assets/materials/lane_mark.tres");
 		_matStone = GD.Load<Material>("res://assets/materials/obstacle_stone.tres");
 		_matSpike = GD.Load<Material>("res://assets/materials/obstacle_spike.tres");
@@ -90,6 +90,73 @@ public partial class TrackSpawner : Node3D
 
 	/// <summary>Called by Game._Ready() to directly wire the player reference (NodePath resolution unreliable).</summary>
 	public void SetPlayer(Player player) => _player = player;
+
+	// ── Procedural stone road material (synchronous Image generation) ─────────────
+	private static StandardMaterial3D CreateStoneRoadMaterial()
+	{
+		const int W      = 128;   // texture width  (tiled on the mesh)
+		const int H      = 128;   // texture height
+		const int NCells = 32;    // number of cobblestone cells
+
+		var rng = new RandomNumberGenerator { Seed = 42 };
+
+		// Random cell centres (with per-stone colour variation)
+		var cx  = new float[NCells];
+		var cy  = new float[NCells];
+		var cv  = new float[NCells];  // brightness jitter per stone
+		for (var i = 0; i < NCells; i++)
+		{
+			cx[i] = rng.RandfRange(0, W);
+			cy[i] = rng.RandfRange(0, H);
+			cv[i] = rng.RandfRange(-0.07f, 0.07f);
+		}
+
+		var image = Image.Create(W, H, false, Image.Format.Rgb8);
+
+		for (var y = 0; y < H; y++)
+		{
+			for (var x = 0; x < W; x++)
+			{
+				var d1 = float.MaxValue;
+				var d2 = float.MaxValue;
+				var nearest = 0;
+
+				for (var i = 0; i < NCells; i++)
+				{
+					// Toroidal (wrapping) distance so texture tiles seamlessly
+					var dx = Mathf.Abs(x - cx[i]);
+					var dy = Mathf.Abs(y - cy[i]);
+					if (dx > W * 0.5f) dx = W - dx;
+					if (dy > H * 0.5f) dy = H - dy;
+					var dSq = dx * dx + dy * dy;
+
+					if (dSq < d1) { d2 = d1; d1 = dSq; nearest = i; }
+					else if (dSq < d2) d2 = dSq;
+				}
+
+				// Distance to cell edge = difference between 1st and 2nd nearest
+				var edge = Mathf.Sqrt(d2) - Mathf.Sqrt(d1);
+
+				// t=0 → dark mortar/grout,  t=1 → light stone face
+				var t = Mathf.Clamp(edge / 5.0f, 0f, 1f);
+
+				var brightness = Mathf.Lerp(0.18f, 0.60f + cv[nearest], t);
+				image.SetPixel(x, y, new Color(brightness, brightness * 0.97f, brightness * 0.93f));
+			}
+		}
+
+		var tex = ImageTexture.CreateFromImage(image);
+
+		return new StandardMaterial3D
+		{
+			AlbedoTexture = tex,
+			AlbedoColor   = new Color(0.80f, 0.78f, 0.75f), // warm tint
+			Roughness     = 0.90f,
+			Metallic      = 0.01f,
+			Uv1Scale      = new Vector3(4f, 8f, 1f)          // ~1.6×1.75 units per stone
+		};
+	}
+
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -202,20 +269,10 @@ public partial class TrackSpawner : Node3D
 		// Floor is built dynamically per-recycle in RandomizeSegmentContent
 		// so pit segments can have a genuine gap with no floor collision.
 
-		foreach (var lx in Lanes)
-		{
-			var stripe = new MeshInstance3D();
-			var sm = new BoxMesh { Size = new Vector3(0.08f, 0.02f, SegmentLength * 0.92f) };
-			stripe.Mesh = sm;
-			stripe.Position = new Vector3(lx, 0.02f, 0f);
-			if (_matLane != null)
-				stripe.SetSurfaceOverrideMaterial(0, _matLane);
-			root.AddChild(stripe);
-		}
-
 		var holder = new Node3D { Name = "Content" };
 		root.AddChild(holder);
 	}
+
 
 	private void RandomizeSegmentContent(Node3D root, int seq)
 	{
